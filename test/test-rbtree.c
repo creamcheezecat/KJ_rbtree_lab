@@ -1,9 +1,9 @@
 #include <assert.h>
-#include <rbtree.h>
+#include "../src/rbtree.c"
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-
+#define SENTINEL 
 // new_rbtree should return rbtree struct with null root node
 void test_init(void) {
   rbtree *t = new_rbtree();
@@ -133,7 +133,7 @@ void test_to_array(rbtree *t, const key_t *arr, const size_t n) {
   insert_arr(t, arr, n);
   qsort((void *)arr, n, sizeof(key_t), comp);
 
-  key_t *res = calloc(n, sizeof(key_t));
+  key_t *res = (key_t *)calloc(n, sizeof(key_t));
   rbtree_to_array(t, res, n);
   for (int i = 0; i < n; i++) {
     assert(arr[i] == res[i]);
@@ -157,13 +157,13 @@ void test_multi_instance() {
   insert_arr(t2, arr2, n2);
   qsort((void *)arr2, n2, sizeof(key_t), comp);
 
-  key_t *res1 = calloc(n1, sizeof(key_t));
+  key_t *res1 = (key_t *)calloc(n1, sizeof(key_t));
   rbtree_to_array(t1, res1, n1);
   for (int i = 0; i < n1; i++) {
     assert(arr1[i] == res1[i]);
   }
 
-  key_t *res2 = calloc(n2, sizeof(key_t));
+  key_t *res2 = (key_t *)calloc(n2, sizeof(key_t));
   rbtree_to_array(t2, res2, n2);
   for (int i = 0; i < n2; i++) {
     assert(arr2[i] == res2[i]);
@@ -356,7 +356,7 @@ void test_find_erase_fixed() {
 void test_find_erase_rand(const size_t n, const unsigned int seed) {
   srand(seed);
   rbtree *t = new_rbtree();
-  key_t *arr = calloc(n, sizeof(key_t));
+  key_t *arr = (key_t *)calloc(n, sizeof(key_t));
   for (int i = 0; i < n; i++) {
     arr[i] = rand();
   }
