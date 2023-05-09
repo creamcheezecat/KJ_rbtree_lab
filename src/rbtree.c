@@ -2,13 +2,12 @@
 #include <stdlib.h>
 #include <stdio.h>
 // 추가된 함수 전방선언
-/* void free_node(rbtree *t, node_t *x); */
 void rbtree_insert_fixup(rbtree *t, node_t *z);
-void rbtree_delete_fixup(rbtree *t, node_t *x);
+void rbtree_erase_fixup(rbtree *t, node_t *x);
 void right_rotate(rbtree *t, node_t *x);
 void left_rotate(rbtree *t, node_t *x);
 void transplant(rbtree *t, node_t *x, node_t *y);
-/*a
+/*
 RBTree 특성 (5개)
 1. 모든노드 RED / BLACK
 2. **루트노드는 BLACK**
@@ -117,7 +116,7 @@ node_t *rbtree_insert(rbtree *t, const key_t key)
 
   return new_node;
 }
-// solve
+// solve 삽입시 재조정
 void rbtree_insert_fixup(rbtree *t, node_t *z) 
 {
   node_t *y;
@@ -273,15 +272,15 @@ int rbtree_erase(rbtree *t, node_t *p)
 
   if(y_origin_color == RBTREE_BLACK){
     // 삭제 한후 밸런싱 로정
-    rbtree_delete_fixup(t,x);
+    rbtree_erase_fixup(t,x);
   }
 
   free(p);
 
   return 0;
 }
-// solve
-void rbtree_delete_fixup(rbtree *t, node_t *x) 
+// solve 삭제시 재조정
+void rbtree_erase_fixup(rbtree *t, node_t *x) 
 {
   while (x != t->root && x->color == RBTREE_BLACK) {
     // CASE 1 ~ 4 : LEFT CASE
