@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 // 추가된 함수 전방선언
-void free_node(rbtree *t, node_t *x);
+/* void free_node(rbtree *t, node_t *x); */
 void rbtree_insert_fixup(rbtree *t, node_t *z);
 void rbtree_delete_fixup(rbtree *t, node_t *x);
 void right_rotate(rbtree *t, node_t *x);
@@ -32,25 +32,46 @@ rbtree *new_rbtree(void)
   return p;
 }
 // solve
-void free_node(rbtree *t, node_t *x)
-{
-  // 후위 순회 방식으로 RB Tree 내의 노드 메모리 반환
-  if (x->left != t->nil) 
-    free_node(t, x->left);
-  if (x->right != t->nil)
-    free_node(t, x->right);
-  free(x);
-  x = NULL;
-}
-// solve
 void delete_rbtree(rbtree *t)
 {
   // TODO: reclaim the tree nodes's memory
-  if (t->root != t->nil)
-    free_node(t, t->root);
+  node_t *cur = t->root;
+
+  
+  node_t *temp;
+    // 루트 노드부터 가장 작은 노드까지 순회하며 노드를 해제한다.
+    while (cur != t->nil) {
+        // 가장 낮은 값을 가진 노드로 이동
+        if (cur->left != t->nil) {
+            cur = cur->left;
+        }
+        // 가장 낮은 값이 오른쪽 서브트리 있다면
+        else if (cur->right != t->nil) {
+            temp = cur->right;
+            // 오른쪽 서브트리의 가장 작은 값을 찾는다
+            while (temp->left != t->nil) {
+                temp = temp->left;
+            }
+            cur = temp;
+        }
+        // 둘다 자식이 둘다 센티넬을 만난다면 메모리 해제
+        else {
+            temp = cur;
+            cur = cur->parent;
+            if (cur != t->nil && temp == cur->left) {
+                cur->left = t->nil;
+            } else if (cur != t->nil && temp == cur->right) {
+                cur->right = t->nil;
+            }
+            free(temp);
+        }
+    }
+
+  // nil 노드와 트리를 가리키는 포인터를 해제한다.
   free(t->nil);
   free(t);
 }
+
 // solve 
 node_t *rbtree_insert(rbtree *t, const key_t key)
 {
