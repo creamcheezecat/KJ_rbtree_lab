@@ -254,8 +254,10 @@ int rbtree_erase(rbtree *t, node_t *p)
     while(y->left != t->nil){
       y = y->left;
     }
+
     y_origin_color = y->color;
     x = y->right;
+
     if(y->parent == p){
       x->parent = y;
     }
@@ -264,6 +266,7 @@ int rbtree_erase(rbtree *t, node_t *p)
       y->right=p->right;
       y->right->parent = y;
     }
+
     transplant(t,p,y);
     y->left = p->left;
     y->left->parent = y;
@@ -392,25 +395,33 @@ int rbtree_to_array(const rbtree *t, key_t *arr, const size_t n)
 }
 
 // add func 왼쪽 회전 하는 함수
+// 노드 x를 기준으로 왼쪽으로 회전하는 함수
 void left_rotate(rbtree *t, node_t *x) 
 {
+  //  y는 x의 오른쪽 자식 노드를 저장
   node_t *y = x->right;
+  //  x의 오른쪽 자식 노드를 y의 왼쪽 자식 노드로 바꿈
   x->right = y->left;
-
+  // 만약 y의 왼쪽 자식노드가 nil아 아니라면 그 노드의 부모를 x로 설정합니다.
   if (y->left != t->nil) {
     y->left->parent = x;
   }
+  // y의 부모 노드를 x의 부모 노드로 설정한다
   y->parent = x->parent;
+  // 만약 x가 루트 노드 인 경우, y를 새로운 루트 노드로 설정
   if (x->parent == t->nil) {
     t->root = y;
-  } 
+  }
+  // 그렇지 않은 경우, x가 부모 노드의 왼쪽 자식인지, 오른쪽 자식인지에 따라 y를 새로운 자식으로 설정
   else if (x == x->parent->left) {
     x->parent->left = y;
   } 
   else {
     x->parent->right = y;
   }
+   // y의 왼쪽 자식으로 x를 설정합니다.
   y->left = x;
+   // x의 부모를 y로 설정합니다.
   x->parent = y;
 }
 // add func 오른쪽 회전 하는 함수
@@ -439,12 +450,18 @@ void right_rotate(rbtree *t, node_t *x)
 // x = 삭제되는 노드 y = 자식노드
 void transplant(rbtree *t, node_t *x, node_t *y)
 {
+  // x가 루트 노드인 경우, y를 새로운 루트 노드로 지정
   if(x->parent == t->nil){
     t->root = y;
-  }else if(x == x->parent->left){
+  }
+  // 그렇지 않은 경우 x가 부모 노드의 왼쪽 자식인 경우, y를 새로운 왼쪽 자식으로 지정
+  else if(x == x->parent->left){
     x->parent->left = y;
-  }else{
+  }
+  // 그 외에는, y를 새로운 오른쪽 자식으로 지정
+  else{
     x->parent->right = y;
   }
+  // y의 부모를 x의 부모로 변경합니다.
   y->parent = x->parent;
 } 
